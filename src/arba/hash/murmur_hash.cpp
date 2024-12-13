@@ -329,5 +329,5 @@ std::array<uint8_t, 16> neutral_murmur_hash_array_16(const void* data, std::size
     return res;
 }
 
-}
-}
+} // namespace hash
+} // namespace arba
