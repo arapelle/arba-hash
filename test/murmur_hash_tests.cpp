@@ -1,6 +1,8 @@
 #include <arba/hash/murmur_hash.hpp>
-#include <cstdlib>
+
 #include <gtest/gtest.h>
+
+#include <cstdlib>
 
 // murmur_hash_64:
 
