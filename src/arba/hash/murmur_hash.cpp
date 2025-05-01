@@ -14,7 +14,7 @@ uint64_t murmur_hash_64(const void* data, std::size_t len, uint64_t seed)
 
     uint64_t h = seed ^ (len * m);
 
-    const uint64_t* data64 = (const uint64_t*)data;
+    const uint64_t* data64 = reinterpret_cast<const uint64_t*>(data);
     const uint64_t* end = data64 + (len / 8);
 
     while (data64 != end)
@@ -29,7 +29,7 @@ uint64_t murmur_hash_64(const void* data, std::size_t len, uint64_t seed)
         h *= m;
     }
 
-    const uint8_t* data8 = (const unsigned char*)data64;
+    const uint8_t* data8 = reinterpret_cast<const uint8_t*>(data64);
 
     switch (len & 7)
     {
