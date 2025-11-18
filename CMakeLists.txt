@@ -39,11 +39,13 @@ configure_headers(configured_headers
 ## Headers:
 set(headers
     include/arba/hash/murmur_hash.hpp
+    include/arba/hash/murmur_hash_2.hpp
 )
 
 ## Sources:
 set(sources
     src/arba/hash/murmur_hash.cpp
+    src/arba/hash/murmur_hash_2.cpp
 )
 
 ## Add C++ library:
