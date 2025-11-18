@@ -1,5 +1,5 @@
-#include <arba/hash/murmur_hash_2.hpp>
 #include <arba/hash/murmur_hash.hpp>
+#include <arba/hash/murmur_hash_2.hpp>
 
 #include <gtest/gtest.h>
 
@@ -57,7 +57,8 @@ TEST(murmur_hash_2_tests, murmur_hash_2_u64__multi_range_specific__eq)
     std::array<std::uint8_t, 10> bytes_p2{ 201, 62, 46, 52, 55, 122, 141, 207, 15, 47 };
     std::array<std::span<std::uint8_t>, 2> bytes_range{ std::span(bytes_p1), std::span(bytes_p2) };
     uint64_t hash = hash::murmur_hash_2_u64(bytes_range, cppx::endianness_specific);
-    std::array<std::uint8_t, 18> other_bytes{ 102, 26, 64, 25, 55, 224, 146, 246, 201, 62, 46, 52, 55, 122, 141, 207, 15, 47 };
+    std::array<std::uint8_t, 18> other_bytes{ 102, 26, 64, 25, 55,  224, 146, 246, 201,
+                                              62,  46, 52, 55, 122, 141, 207, 15,  47 };
     uint64_t hash2 = hash::murmur_hash_2_u64(other_bytes, cppx::endianness_specific);
     ASSERT_EQ(hash, hash2);
 }
@@ -107,7 +108,8 @@ TEST(murmur_hash_2_tests, murmur_hash_2_u64__multi_range_neutral__eq)
     std::array<std::uint8_t, 10> bytes_p2{ 201, 62, 46, 52, 55, 122, 141, 207, 15, 47 };
     std::array<std::span<std::uint8_t>, 2> bytes_range{ std::span(bytes_p1), std::span(bytes_p2) };
     uint64_t hash = hash::murmur_hash_2_u64(bytes_range, cppx::endianness_neutral);
-    std::array<std::uint8_t, 18> other_bytes{ 102, 26, 64, 25, 55, 224, 146, 246, 201, 62, 46, 52, 55, 122, 141, 207, 15, 47 };
+    std::array<std::uint8_t, 18> other_bytes{ 102, 26, 64, 25, 55,  224, 146, 246, 201,
+                                              62,  46, 52, 55, 122, 141, 207, 15,  47 };
     uint64_t hash2 = hash::murmur_hash_2_u64(other_bytes, cppx::endianness_neutral);
     ASSERT_EQ(hash, hash2);
 }
@@ -137,7 +139,8 @@ TEST(murmur_hash_2_tests, murmur_hash_2_16u8__ne_seed_neutral__ne)
 {
     std::array<std::uint8_t, 8> bytes{ 102, 26, 64, 25, 55, 224, 146, 246 };
     std::array<std::uint8_t, 16> hash = hash::murmur_hash_2_16u8(bytes, cppx::endianness_neutral);
-    std::array<std::uint8_t, 16> hash2 = hash::murmur_hash_2_16u8(bytes, cppx::endianness_neutral, 8'467'930'056'364'136'223ULL);
+    std::array<std::uint8_t, 16> hash2 =
+        hash::murmur_hash_2_16u8(bytes, cppx::endianness_neutral, 8'467'930'056'364'136'223ULL);
     ASSERT_NE(hash, hash2);
 }
 

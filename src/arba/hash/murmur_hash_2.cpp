@@ -343,6 +343,6 @@ std::array<uint8_t, 16> murmur_hash_2_16u8_neutral_(std::span<const std::byte> b
     return res;
 }
 
-}
+} // namespace private_
 } // namespace hash
 } // namespace arba
