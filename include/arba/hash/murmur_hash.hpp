@@ -18,7 +18,7 @@ namespace hash
  * The implementation is taken from the function MurmurHash64A written in the following file:
  * https://github.com/aappleby/smhasher/blob/master/src/MurmurHash2.cpp
  */
-uint64_t murmur_hash_64(const void* data, std::size_t len, uint64_t seed = 6'364'136'223'846'793'005ULL);
+[[deprecated]] uint64_t murmur_hash_64(const void* data, std::size_t len, uint64_t seed = 6'364'136'223'846'793'005ULL);
 
 template <std::ranges::contiguous_range crange>
     requires(sizeof(std::ranges::range_value_t<crange>) == 1)
@@ -37,7 +37,8 @@ inline uint64_t murmur_hash_64(const crange& bytes, uint64_t seed = 6'364'136'22
  * The implementation is inspired from the function MurmurHashNeutral2 written in the following file:
  * https://github.com/aappleby/smhasher/blob/master/src/MurmurHash2.cpp
  */
-uint64_t neutral_murmur_hash_64(const void* data, std::size_t len, uint64_t seed = 6'364'136'223'846'793'005ULL);
+[[deprecated]] uint64_t neutral_murmur_hash_64(const void* data, std::size_t len,
+                                               uint64_t seed = 6'364'136'223'846'793'005ULL);
 
 template <std::ranges::contiguous_range crange>
     requires(sizeof(std::ranges::range_value_t<crange>) == 1)
@@ -54,8 +55,8 @@ inline uint64_t neutral_murmur_hash_64(const crange& bytes, uint64_t seed = 6'36
  * @param seed
  * @return hash 128 as 16 uint8_t in a std::array
  */
-std::array<uint8_t, 16> neutral_murmur_hash_array_16(const void* data, std::size_t len,
-                                                     uint64_t seed = 6'364'136'223'846'793'005ULL);
+[[deprecated]] std::array<uint8_t, 16> neutral_murmur_hash_array_16(const void* data, std::size_t len,
+                                                                    uint64_t seed = 6'364'136'223'846'793'005ULL);
 
 template <std::ranges::contiguous_range crange>
     requires(sizeof(std::ranges::range_value_t<crange>) == 1)

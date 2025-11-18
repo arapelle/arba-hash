@@ -19,7 +19,7 @@ set_build_type_ifndef()
 
 set_project_name(NAMESPACE "arba" FEATURE_NAME "hash")
 string(TIMESTAMP configure_datetime "%Y%m%d-%H%M%S")
-set_project_semantic_version("0.3.0" BUILD_METADATA "${configure_datetime}")
+set_project_semantic_version("0.4.0" BUILD_METADATA "${configure_datetime}")
 
 project(${PROJECT_NAME}
         VERSION ${PROJECT_VERSION}
@@ -39,11 +39,13 @@ configure_headers(configured_headers
 ## Headers:
 set(headers
     include/arba/hash/murmur_hash.hpp
+    include/arba/hash/murmur_hash_2.hpp
 )
 
 ## Sources:
 set(sources
     src/arba/hash/murmur_hash.cpp
+    src/arba/hash/murmur_hash_2.cpp
 )
 
 ## Add C++ library:
@@ -68,7 +70,7 @@ add_cpp_library(${PROJECT_TARGET_NAME} ${${PROJECT_UPPER_VAR_NAME}_LIBRARY_TYPE}
 add_library("${PROJECT_NAMESPACE}::${PROJECT_FEATURE_NAME}${LIBRARY_TYPE_POSTFIX}" ALIAS ${PROJECT_TARGET_NAME})
 
 ## Link C++ targets:
-find_package(arba-cppx 0.3.0 REQUIRED CONFIG)
+find_package(arba-cppx 0.4.0 REQUIRED CONFIG)
 target_link_libraries(${PROJECT_TARGET_NAME}
     PUBLIC
         arba::cppx
