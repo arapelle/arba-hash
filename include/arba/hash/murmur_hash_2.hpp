@@ -6,6 +6,7 @@
 #include <span>
 #include <cstdint>
 #include <ranges>
+#include <numeric>
 
 inline namespace arba
 {
@@ -16,10 +17,15 @@ constexpr uint64_t murmur_hash_2_default_seed = 6'364'136'223'846'793'005ull;
 
 namespace private_
 {
-constexpr uint64_t murmur_hash_2_m = 0xc6a4a7935bd1e995ull;
+[[nodiscard]] uint64_t murmur_hash_2_u64_b_(std::size_t size, uint64_t seed);
+[[nodiscard]] uint64_t murmur_hash_2_u64_e_(uint64_t h);
 
-[[nodiscard]] uint64_t murmur_hash_2_u64_specific_(std::span<const std::byte> bytes, uint64_t start);
-[[nodiscard]] uint64_t murmur_hash_2_u64_neutral_(std::span<const std::byte> bytes, uint64_t start);
+[[nodiscard]] uint64_t murmur_hash_2_u64_specific_h_(std::span<const std::byte> bytes, uint64_t h);
+[[nodiscard]] uint64_t murmur_hash_2_u64_specific_(std::span<const std::byte> bytes, uint64_t seed);
+
+[[nodiscard]] uint64_t murmur_hash_2_u64_neutral_h_(std::span<const std::byte> bytes, uint64_t h);
+[[nodiscard]] uint64_t murmur_hash_2_u64_neutral_(std::span<const std::byte> bytes, uint64_t seed);
+
 [[nodiscard]] std::array<uint8_t, 16> murmur_hash_2_16u8_neutral_(std::span<const std::byte> bytes, uint64_t seed);
 }
 
@@ -29,14 +35,13 @@ constexpr uint64_t murmur_hash_2_m = 0xc6a4a7935bd1e995ull;
                                                 cppx::EndiannessPolicy auto endianness_policy,
                                                 uint64_t seed = murmur_hash_2_default_seed)
 {
-    const uint64_t start = seed ^ (bytes.size() * private_::murmur_hash_2_m);
     if constexpr (std::is_same_v<decltype(endianness_policy), cppx::endianness_specific_t>)
     {
-        return private_::murmur_hash_2_u64_specific_(bytes, start);
+        return private_::murmur_hash_2_u64_specific_(bytes, seed);
     }
     else
     {
-        return private_::murmur_hash_2_u64_neutral_(bytes, start);
+        return private_::murmur_hash_2_u64_neutral_(bytes, seed);
     }
 }
 
@@ -50,14 +55,32 @@ template <std::ranges::contiguous_range crange, cppx::EndiannessPolicy Endiannes
     return murmur_hash_2_u64(std::as_bytes(std::span(bytes)), endianness_policy, seed);
 }
 
+template <std::ranges::range RangeT, cppx::EndiannessPolicy EndiannessPolicyT>
+    requires(std::ranges::contiguous_range<std::ranges::range_value_t<RangeT>>)
+[[nodiscard]] inline uint64_t murmur_hash_2_u64(RangeT bytes_range,
+                                                EndiannessPolicyT endianness_policy,
+                                                uint64_t seed = murmur_hash_2_default_seed)
+{
+    const std::size_t total_size = std::transform_reduce(std::ranges::begin(bytes_range), std::ranges::end(bytes_range),
+                                                         0, std::plus{}, [](const auto& bytes) { return bytes.size(); });
+    uint64_t h = private_::murmur_hash_2_u64_b_(total_size, seed);
+    for (auto bytes: bytes_range)
+    {
+        if constexpr (std::is_same_v<decltype(endianness_policy), cppx::endianness_specific_t>)
+            h = private_::murmur_hash_2_u64_specific_h_(std::as_bytes(std::span(bytes)), h);
+        else
+            h = private_::murmur_hash_2_u64_neutral_h_(std::as_bytes(std::span(bytes)), h);
+    }
+    return private_::murmur_hash_2_u64_e_(h);
+}
+
 // murmur_hash_2_16u8:
 
 [[nodiscard]] inline std::array<uint8_t, 16> murmur_hash_2_16u8(std::span<const std::byte> bytes,
                                                                 cppx::endianness_neutral_t,
                                                                 uint64_t seed = murmur_hash_2_default_seed)
 {
-    const uint64_t start = seed ^ (bytes.size() * private_::murmur_hash_2_m);
-    return private_::murmur_hash_2_16u8_neutral_(bytes, start);
+    return private_::murmur_hash_2_16u8_neutral_(bytes, seed);
 }
 
 template <std::ranges::contiguous_range crange>

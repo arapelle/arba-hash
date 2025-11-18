@@ -8,10 +8,25 @@ namespace hash
 {
 namespace private_
 {
-uint64_t murmur_hash_2_u64_specific_(std::span<const std::byte> bytes, uint64_t h)
-{
-    const int r = 47;
+constexpr uint64_t murmur_hash_2_m = 0xc6a4a7935bd1e995ull;
+constexpr int murmur_hash_2_r = 47;
 
+uint64_t murmur_hash_2_u64_b_(std::size_t size, uint64_t seed)
+{
+    return seed ^ (size * murmur_hash_2_m);
+}
+
+uint64_t murmur_hash_2_u64_e_(uint64_t h)
+{
+    h ^= h >> murmur_hash_2_r;
+    h *= murmur_hash_2_m;
+    h ^= h >> murmur_hash_2_r;
+
+    return h;
+}
+
+uint64_t murmur_hash_2_u64_specific_h_(std::span<const std::byte> bytes, uint64_t h)
+{
     const uint64_t* data64 = reinterpret_cast<const uint64_t*>(bytes.data());
     const uint64_t* end = data64 + (bytes.size() / 8);
 
@@ -20,7 +35,7 @@ uint64_t murmur_hash_2_u64_specific_(std::span<const std::byte> bytes, uint64_t 
         uint64_t k = *data64++;
 
         k *= murmur_hash_2_m;
-        k ^= k >> r;
+        k ^= k >> murmur_hash_2_r;
         k *= murmur_hash_2_m;
 
         h ^= k;
@@ -54,17 +69,18 @@ uint64_t murmur_hash_2_u64_specific_(std::span<const std::byte> bytes, uint64_t 
         h *= murmur_hash_2_m;
     };
 
-    h ^= h >> r;
-    h *= murmur_hash_2_m;
-    h ^= h >> r;
-
     return h;
 }
 
-uint64_t murmur_hash_2_u64_neutral_(std::span<const std::byte> bytes, uint64_t h)
+uint64_t murmur_hash_2_u64_specific_(std::span<const std::byte> bytes, uint64_t h)
 {
-    const int r = 47;
+    h = murmur_hash_2_u64_b_(bytes.size(), h);
+    h = murmur_hash_2_u64_specific_h_(bytes, h);
+    return murmur_hash_2_u64_e_(h);
+}
 
+uint64_t murmur_hash_2_u64_neutral_h_(std::span<const std::byte> bytes, uint64_t h)
+{
     const uint8_t* data8 = reinterpret_cast<const uint8_t*>(bytes.data());
     std::size_t len = bytes.size();
 
@@ -96,7 +112,7 @@ uint64_t murmur_hash_2_u64_neutral_(std::span<const std::byte> bytes, uint64_t h
         }
 
         k *= murmur_hash_2_m;
-        k ^= k >> r;
+        k ^= k >> murmur_hash_2_r;
         k *= murmur_hash_2_m;
 
         h *= murmur_hash_2_m;
@@ -160,23 +176,24 @@ uint64_t murmur_hash_2_u64_neutral_(std::span<const std::byte> bytes, uint64_t h
         };
     }
 
-    h ^= h >> r;
-    h *= murmur_hash_2_m;
-    h ^= h >> r;
-
     return h;
+}
+
+uint64_t murmur_hash_2_u64_neutral_(std::span<const std::byte> bytes, uint64_t h)
+{
+    h = murmur_hash_2_u64_b_(bytes.size(), h);
+    h = murmur_hash_2_u64_neutral_h_(bytes, h);
+    return murmur_hash_2_u64_e_(h);
 }
 
 std::array<uint8_t, 16> murmur_hash_2_16u8_neutral_(std::span<const std::byte> bytes, uint64_t seed)
 {
-    const int r = 47;
-
-    std::size_t len = bytes.size();
     std::array<uint8_t, 16> res;
-    uint64_t h = seed ^ (len * murmur_hash_2_m);
-    uint64_t h2 = (~seed) ^ (len * murmur_hash_2_m);
+    uint64_t h = seed ^ (bytes.size() * murmur_hash_2_m);
+    uint64_t h2 = (~seed) ^ (bytes.size() * murmur_hash_2_m);
 
     const uint8_t* data8 = reinterpret_cast<const unsigned char*>(bytes.data());
+    std::size_t len = bytes.size();
 
     while (len >= sizeof(h))
     {
@@ -206,7 +223,7 @@ std::array<uint8_t, 16> murmur_hash_2_16u8_neutral_(std::span<const std::byte> b
         }
 
         k *= murmur_hash_2_m;
-        k ^= k >> r;
+        k ^= k >> murmur_hash_2_r;
         k *= murmur_hash_2_m;
 
         h *= murmur_hash_2_m;
@@ -304,12 +321,12 @@ std::array<uint8_t, 16> murmur_hash_2_16u8_neutral_(std::span<const std::byte> b
         };
     }
 
-    h ^= h >> r;
+    h ^= h >> murmur_hash_2_r;
     h *= murmur_hash_2_m;
-    h ^= h >> r;
-    h2 ^= h2 >> r;
+    h ^= h >> murmur_hash_2_r;
+    h2 ^= h2 >> murmur_hash_2_r;
     h2 *= murmur_hash_2_m;
-    h2 ^= h2 >> r;
+    h2 ^= h2 >> murmur_hash_2_r;
 
     auto iter = res.begin(), end_iter = iter + sizeof(h);
     for (; iter != end_iter; ++iter)
