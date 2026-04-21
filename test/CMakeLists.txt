@@ -7,5 +7,6 @@ add_cpp_library_basic_tests(${PROJECT_TARGET_NAME} GTest::gtest_main
     SOURCES
         murmur_hash_tests.cpp
         murmur_hash_2_tests.cpp
+        murmur_hash_2_compat_smhasher_tests.cpp
         project_version_tests.cpp
 )
