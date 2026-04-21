@@ -1,4 +1,4 @@
-#include <arba/hash/murmur_hash.hpp>
+#include <arba/hash/murmur_hash_2.hpp>
 #include <arba/hash/version.hpp>
 
 #include <cstdlib>
@@ -6,7 +6,7 @@
 
 int main()
 {
-    std::cout << arba::hash::neutral_murmur_hash_64("hello world") << std::endl;
+    std::cout << arba::hash::murmur_hash_2_u64("hello world", cppx::endianness_specific) << std::endl;
     std::cout << "TEST PACKAGE SUCCESS" << std::endl;
     return EXIT_SUCCESS;
 }
